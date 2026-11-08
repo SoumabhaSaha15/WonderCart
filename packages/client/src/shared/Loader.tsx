@@ -18,7 +18,7 @@ export default function LoadingPage() {
             className="size-9 object-contain dark:invert"
           />
         </div>
-        <p className="text-sm font-semibold tracking-[0.18em]">WONDERCART</p>
+        <p className="text-sm font-semibold uppercase tracking-widest">Wondercart</p>
         <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
           <span
             aria-hidden="true"

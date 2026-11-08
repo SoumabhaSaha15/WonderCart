@@ -16,5 +16,9 @@
     "esModuleInterop": true,
     "declaration": false
   },
+  "tsc-alias": {
+    "verbose": true,
+    "resolve-full-paths": true
+  },
   "include": ["./src/**/*", "./types"]
 }

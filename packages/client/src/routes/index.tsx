@@ -1,6 +1,7 @@
-import { useState, type ReactNode } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+// import {Link} from "@tanstack/react-router";
 import { useInView } from "react-intersection-observer";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, type ComponentProps, type ReactNode } from "react";
 import { LuArrowRight, LuHeart, LuMenu, LuShoppingBag, LuStar, LuX } from "react-icons/lu";
 
 type Category = "All picks" | "Fashion" | "Home" | "Beauty" | "Tech";
@@ -111,6 +112,28 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
   );
 }
 
+/** Page frame: max width and horizontal padding are defined here and nowhere else. */
+function Container({ className = "", ...props }: ComponentProps<"div">) {
+  return (
+    <div className={`mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12 ${className}`} {...props} />
+  );
+}
+
+const sectionPadding = {
+  default: "py-16 sm:py-20 lg:py-24",
+  hero: "pb-16 pt-9 sm:pb-20 sm:pt-12 lg:pb-24 lg:pt-14",
+  closing: "pb-16 sm:pb-20 lg:pb-24",
+} as const;
+
+/** Vertical rhythm for every section: pick a variant instead of writing padding by hand. */
+function Section({
+  spacing = "default",
+  className = "",
+  ...props
+}: ComponentProps<"section"> & { spacing?: keyof typeof sectionPadding }) {
+  return <section className={`scroll-mt-8 ${sectionPadding[spacing]} ${className}`} {...props} />;
+}
+
 function RouteComponent() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("All picks");
   const [cartCount, setCartCount] = useState(0);
@@ -132,12 +155,10 @@ function RouteComponent() {
       </div>
 
       <header className="relative z-10 border-b border-border bg-background">
-        <div className="mx-auto flex max-w-330 items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
+        <Container className="flex items-center justify-between py-5">
           <a href="#" className="flex items-center gap-2.5" aria-label="WonderCart home">
             <img src="/logo.svg" alt="" className="size-10 object-contain dark:invert" />
-            <span className="font-heading text-[22px] font-bold tracking-[-0.06em]">
-              wondercart
-            </span>
+            <span className="font-heading text-xl font-bold tracking-tighter">wondercart</span>
           </a>
 
           <nav className="hidden items-center gap-9 text-sm font-medium text-muted-foreground md:flex">
@@ -164,8 +185,8 @@ function RouteComponent() {
               className="relative flex size-11 items-center justify-center rounded-full border border-border bg-card transition hover:border-primary"
               aria-label={`Shopping bag with ${cartCount} items`}
             >
-              <LuShoppingBag className="size-4.5" />
-              <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              <LuShoppingBag className="size-5" />
+              <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                 {cartCount}
               </span>
             </button>
@@ -179,7 +200,7 @@ function RouteComponent() {
               {menuOpen ? <LuX className="size-5" /> : <LuMenu className="size-5" />}
             </button>
           </div>
-        </div>
+        </Container>
         {menuOpen && (
           <nav className="flex flex-col gap-1 border-t border-border px-5 py-3 text-sm font-medium md:hidden">
             <a className="rounded-lg px-3 py-2.5 hover:bg-muted" href="#shop" onClick={closeMenu}>
@@ -201,98 +222,100 @@ function RouteComponent() {
 
       <main>
         <Reveal>
-          <section className="mx-auto grid max-w-330 items-center gap-10 px-5 pb-16 pt-9 sm:px-8 sm:pb-20 sm:pt-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14 lg:px-12 lg:pb-24 lg:pt-14">
-            <div className="max-w-142.5">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-secondary-foreground">
-                <span className="size-1.5 rounded-full bg-primary" />
-                Good things, found here
-              </div>
-              <h1 className="font-heading text-[clamp(3.35rem,7.3vw,6.25rem)] font-semibold leading-[0.96] tracking-[-0.075em] text-foreground">
-                Find your
-                <br />
-                next <span className="font-serif font-normal italic text-primary">favorite</span>
-                <br />
-                thing.
-              </h1>
-              <p className="mt-7 max-w-110 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-                Thoughtful little upgrades, everyday essentials, and the kind of gifts you'll want
-                to keep for yourself.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <a
-                  href="#shop"
-                  className="inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
-                >
-                  Shop the good stuff
-                  <LuArrowRight className="size-4" />
-                </a>
-                <span className="text-sm text-muted-foreground">Free shipping over $50</span>
-              </div>
-              <div className="mt-10 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[
-                    "photo-1534528741775-53994a69daeb",
-                    "photo-1500648767791-00dcc994a43e",
-                    "photo-1531123897727-8f129e1688ce",
-                  ].map((photo) => (
-                    <img
-                      key={photo}
-                      className="size-9 rounded-full border-[3px] border-background object-cover"
-                      src={`https://images.unsplash.com/${photo}?auto=format&fit=crop&w=100&h=100&q=80`}
-                      alt=""
-                    />
-                  ))}
+          <Section spacing="hero">
+            <Container className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+              <div className="max-w-xl lg:col-span-5">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-secondary-foreground">
+                  <span className="size-1.5 rounded-full bg-primary" />
+                  Good things, found here
                 </div>
-                <div>
-                  <div className="flex items-center gap-1 text-sm font-bold">
-                    <LuStar className="size-3.5 fill-primary text-primary" />
-                    4.9 out of 5
+                <h1 className="font-heading text-6xl font-semibold leading-none tracking-tighter sm:text-7xl lg:text-8xl text-foreground">
+                  Find your
+                  <br />
+                  next <span className="font-serif font-normal italic text-primary">favorite</span>
+                  <br />
+                  thing.
+                </h1>
+                <p className="mt-7 max-w-md text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+                  Thoughtful little upgrades, everyday essentials, and the kind of gifts you'll want
+                  to keep for yourself.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <a
+                    href="#shop"
+                    className="inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+                  >
+                    Shop the good stuff
+                    <LuArrowRight className="size-4" />
+                  </a>
+                  <Link to="/about">
+                    <span className="text-sm text-muted-foreground">Free shipping over $50</span>
+                  </Link>
+                </div>
+                <div className="mt-10 flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {[
+                      "photo-1534528741775-53994a69daeb",
+                      "photo-1500648767791-00dcc994a43e",
+                      "photo-1531123897727-8f129e1688ce",
+                    ].map((photo) => (
+                      <img
+                        key={photo}
+                        className="size-9 rounded-full border-2 border-background object-cover"
+                        src={`https://images.unsplash.com/${photo}?auto=format&fit=crop&w=100&h=100&q=80`}
+                        alt=""
+                      />
+                    ))}
                   </div>
-                  <p className="text-xs text-muted-foreground">From 2,400+ happy shoppers</p>
+                  <div>
+                    <div className="flex items-center gap-1 text-sm font-bold">
+                      <LuStar className="size-4 fill-primary text-primary" />
+                      4.9 out of 5
+                    </div>
+                    <p className="text-xs text-muted-foreground">From 2,400+ happy shoppers</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="relative mx-auto w-full max-w-162.5 lg:ml-auto">
-              <div className="absolute -right-2 top-6 z-10 flex size-23 rotate-6 flex-col items-center justify-center rounded-full bg-accent text-center text-accent-foreground shadow-lg sm:-right-5 sm:top-10 sm:size-28">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em]">
-                  Little joys
-                </span>
-                <span className="font-heading text-2xl font-bold leading-tight">15% off</span>
-                <span className="text-[10px] font-medium">your first order</span>
-              </div>
-              <div className="relative overflow-hidden rounded-[30px] bg-muted sm:rounded-[38px]">
-                <img
-                  src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1500&q=90"
-                  alt="A thoughtfully styled spring outfit"
-                  className="h-97.5 w-full object-cover object-[center_38%] sm:h-125 lg:h-147.5"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 text-white sm:bottom-9 sm:left-9">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/80">
-                    The spring edit
-                  </p>
-                  <p className="mt-2 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-                    A fresh start
-                    <br />
-                    looks good on you.
-                  </p>
+              <div className="relative mx-auto w-full max-w-2xl lg:col-span-7 lg:ml-auto">
+                <div className="absolute -right-2 top-6 z-10 flex size-24 rotate-6 flex-col items-center justify-center rounded-full bg-accent text-center text-accent-foreground shadow-lg sm:-right-5 sm:top-10 sm:size-28">
+                  <span className="text-xs font-bold uppercase tracking-widest">Little joys</span>
+                  <span className="font-heading text-2xl font-bold leading-tight">15% off</span>
+                  <span className="text-xs font-medium">your first order</span>
                 </div>
-                <a
-                  href="#shop"
-                  className="absolute bottom-7 right-6 flex size-12 items-center justify-center rounded-full bg-background text-foreground transition hover:scale-105 sm:bottom-9 sm:right-9"
-                  aria-label="Shop the spring edit"
-                >
-                  <LuArrowRight className="size-5" />
-                </a>
+                <div className="relative overflow-hidden rounded-3xl bg-muted sm:rounded-4xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1500&q=90"
+                    alt="A thoughtfully styled spring outfit"
+                    className="aspect-4/5 w-full object-cover object-center sm:aspect-5/4 lg:aspect-square"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-6 left-6 text-white sm:bottom-8 sm:left-8">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-white/80">
+                      The spring edit
+                    </p>
+                    <p className="mt-2 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
+                      A fresh start
+                      <br />
+                      looks good on you.
+                    </p>
+                  </div>
+                  <a
+                    href="#shop"
+                    className="absolute bottom-6 right-6 flex size-12 items-center justify-center rounded-full bg-background text-foreground transition hover:scale-105 sm:bottom-8 sm:right-8"
+                    aria-label="Shop the spring edit"
+                  >
+                    <LuArrowRight className="size-5" />
+                  </a>
+                </div>
               </div>
-            </div>
-          </section>
+            </Container>
+          </Section>
         </Reveal>
 
         <Reveal>
           <section className="border-y border-border bg-card/70">
-            <div className="mx-auto grid max-w-330 grid-cols-2 gap-y-5 px-5 py-6 sm:grid-cols-4 sm:px-8 lg:px-12">
+            <Container className="grid grid-cols-2 gap-y-5 py-6 md:grid-cols-4">
               {[
                 ["A better kind of find", "Small makers, good materials"],
                 ["Easy on the planet", "Less waste, more thought"],
@@ -301,76 +324,75 @@ function RouteComponent() {
               ].map(([title, detail], index) => (
                 <div
                   key={title}
-                  className={`px-3 sm:px-5 ${index > 0 ? "sm:border-l sm:border-border" : ""}`}
+                  className={`px-3 md:px-5 ${index > 0 ? "md:border-l md:border-border" : ""}`}
                 >
                   <p className="text-sm font-semibold">{title}</p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
                 </div>
               ))}
-            </div>
+            </Container>
           </section>
         </Reveal>
 
         <Reveal>
-          <section
-            id="categories"
-            className="mx-auto max-w-330 scroll-mt-10 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24"
-          >
-            <div className="mb-8 flex items-end justify-between gap-5">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-                  Browse by mood
-                </p>
-                <h2 className="mt-2 font-heading text-3xl font-semibold tracking-tighter sm:text-4xl">
-                  A little bit of everything.
-                </h2>
-              </div>
-              <a
-                href="#shop"
-                className="hidden items-center gap-2 pb-1 text-sm font-semibold text-muted-foreground transition hover:text-primary sm:flex"
-              >
-                See all finds <LuArrowRight className="size-4" />
-              </a>
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
-              {categories.map((category) => (
-                <button
-                  key={category.name}
-                  type="button"
-                  onClick={() => {
-                    setSelectedCategory(category.name);
-                    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="group relative overflow-hidden rounded-[22px] text-left sm:rounded-[28px]"
+          <Section id="categories">
+            <Container>
+              <div className="mb-8 flex items-end justify-between gap-5">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                    Browse by mood
+                  </p>
+                  <h2 className="mt-2 font-heading text-3xl font-semibold tracking-tighter sm:text-4xl">
+                    A little bit of everything.
+                  </h2>
+                </div>
+                <a
+                  href="#shop"
+                  className="hidden items-center gap-2 pb-1 text-sm font-semibold text-muted-foreground transition hover:text-primary sm:flex"
                 >
-                  <img
-                    src={category.image}
-                    alt=""
-                    loading="lazy"
-                    className="h-47.5 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-67.5"
-                  />
-                  <span className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
-                  <span className="absolute bottom-4 left-4 text-white sm:bottom-6 sm:left-6">
-                    <span className="block font-heading text-xl font-semibold sm:text-2xl">
-                      {category.name}
+                  See all finds <LuArrowRight className="size-4" />
+                </a>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4">
+                {categories.map((category) => (
+                  <button
+                    key={category.name}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory(category.name);
+                      document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="group relative overflow-hidden rounded-2xl text-left sm:rounded-3xl"
+                  >
+                    <img
+                      src={category.image}
+                      alt=""
+                      loading="lazy"
+                      className="aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-105 md:aspect-square"
+                    />
+                    <span className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
+                    <span className="absolute bottom-4 left-4 text-white sm:bottom-6 sm:left-6">
+                      <span className="block font-heading text-xl font-semibold sm:text-2xl">
+                        {category.name}
+                      </span>
+                      <span className="mt-1 block text-xs text-white/80">{category.note}</span>
                     </span>
-                    <span className="mt-1 block text-xs text-white/80">{category.note}</span>
-                  </span>
-                  <span className="absolute bottom-5 right-4 flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground transition group-hover:bg-background sm:bottom-6 sm:right-6">
-                    <LuArrowRight className="size-4" />
-                  </span>
-                </button>
-              ))}
-            </div>
-          </section>
+                    <span className="absolute bottom-4 right-4 flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground transition group-hover:bg-background sm:bottom-6 sm:right-6">
+                      <LuArrowRight className="size-4" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Container>
+          </Section>
         </Reveal>
 
         <Reveal>
-          <section id="shop" className="scroll-mt-8 bg-muted">
-            <div className="mx-auto max-w-330 px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
+          <Section id="shop" className="bg-muted">
+            <Container>
               <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary">
                     The good stuff
                   </p>
                   <h2 className="mt-2 font-heading text-3xl font-semibold tracking-tighter sm:text-4xl">
@@ -400,20 +422,20 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-4">
                 {visibleProducts.map((product) => (
                   <article key={product.id} className="group min-w-0">
                     <div
-                      className={`relative overflow-hidden rounded-[20px] ${product.color} sm:rounded-[26px]`}
+                      className={`relative overflow-hidden rounded-2xl ${product.color} sm:rounded-3xl`}
                     >
                       <img
                         src={product.image}
                         alt={product.name}
                         loading="lazy"
-                        className="h-52.5 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-75"
+                        className="aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-105"
                       />
                       {product.tag && (
-                        <span className="absolute left-3 top-3 rounded-full bg-background px-3 py-1.5 text-[10px] font-bold tracking-wide text-muted-foreground sm:left-4 sm:top-4 sm:text-xs">
+                        <span className="absolute left-3 top-3 rounded-full bg-background px-3 py-1.5 text-xs font-bold tracking-wide text-muted-foreground sm:left-4 sm:top-4 sm:text-xs">
                           {product.tag}
                         </span>
                       )}
@@ -464,100 +486,104 @@ function RouteComponent() {
                   </article>
                 ))}
               </div>
-            </div>
-          </section>
+            </Container>
+          </Section>
         </Reveal>
 
         <Reveal>
-          <section
-            id="story"
-            className="mx-auto grid max-w-330 items-center gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-12 lg:py-24"
-          >
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1300&q=85"
-                alt="Warm, welcoming home filled with thoughtful details"
-                loading="lazy"
-                className="h-82.5 w-full rounded-[28px] object-cover sm:h-112.5 sm:rounded-[36px]"
-              />
-              <div className="absolute -bottom-5 right-4 rounded-2xl bg-accent px-5 py-4 text-accent-foreground shadow-lg sm:right-8 sm:px-7 sm:py-5">
-                <p className="font-heading text-2xl font-bold tracking-tight">Made with care.</p>
-                <p className="mt-1 text-xs font-medium text-accent-foreground/80">
-                  Chosen with you in mind.
+          <Section id="story">
+            <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+              <div className="relative">
+                <img
+                  src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1300&q=85"
+                  alt="Warm, welcoming home filled with thoughtful details"
+                  loading="lazy"
+                  className="aspect-4/3 w-full rounded-3xl object-cover sm:rounded-4xl"
+                />
+                <div className="absolute -bottom-5 right-4 rounded-2xl bg-accent px-5 py-4 text-accent-foreground shadow-lg sm:right-8 sm:px-7 sm:py-5">
+                  <p className="font-heading text-2xl font-bold tracking-tight">Made with care.</p>
+                  <p className="mt-1 text-xs font-medium text-accent-foreground/80">
+                    Chosen with you in mind.
+                  </p>
+                </div>
+              </div>
+              <div className="pt-4">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                  A little about us
+                </p>
+                <h2 className="mt-3 max-w-xl font-heading text-4xl font-semibold leading-tight tracking-tighter sm:text-5xl">
+                  Shopping should feel like finding a{" "}
+                  <span className="font-serif italic">gem.</span>
+                </h2>
+                <p className="mt-5 max-w-md text-base leading-7 text-muted-foreground">
+                  We bring together independent makers and everyday essentials that earn their place
+                  in your home. No endless scrolling. Just good things, picked with a little more
+                  care.
+                </p>
+                <a
+                  href="#categories"
+                  className="mt-7 inline-flex items-center gap-2 border-b border-foreground pb-1.5 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
+                >
+                  Get to know our picks <LuArrowRight className="size-4" />
+                </a>
+              </div>
+            </Container>
+          </Section>
+        </Reveal>
+
+        <Reveal>
+          <Section spacing="closing">
+            <Container>
+              <div className="overflow-hidden rounded-3xl bg-primary px-6 py-12 text-center text-primary-foreground sm:rounded-4xl sm:px-10 sm:py-16">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">
+                  A note from us
+                </p>
+                <h2 className="mx-auto mt-3 max-w-xl font-heading text-3xl font-semibold tracking-tighter sm:text-4xl">
+                  Good finds. Good feelings. Straight to your inbox.
+                </h2>
+                <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-primary-foreground/70">
+                  Get first dibs on new favorites, thoughtful gift ideas, and the occasional little
+                  treat.
+                </p>
+                <form
+                  className="mx-auto mt-7 flex max-w-md rounded-full bg-background p-1.5"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const email = new FormData(event.currentTarget).get("email");
+                    if (typeof email === "string") {
+                      window.location.href = `mailto:hello@wondercart.com?subject=Join%20WonderCart%20notes&body=${encodeURIComponent(email)}`;
+                    }
+                  }}
+                >
+                  <label htmlFor="newsletter-email" className="sr-only">
+                    Your email address
+                  </label>
+                  <input
+                    id="newsletter-email"
+                    name="email"
+                    type="email"
+                    placeholder="Your email address"
+                    className="min-w-0 flex-1 bg-transparent px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-full bg-secondary px-5 py-3 text-xs font-bold text-secondary-foreground transition hover:bg-secondary/80 sm:text-sm"
+                  >
+                    Count me in
+                  </button>
+                </form>
+                <p className="mt-3 text-xs text-primary-foreground/50">
+                  Only the good stuff. Unsubscribe anytime.
                 </p>
               </div>
-            </div>
-            <div className="pt-4 lg:pl-3">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-                A little about us
-              </p>
-              <h2 className="mt-3 max-w-127.5 font-heading text-4xl font-semibold leading-[1.08] tracking-[-0.06em] sm:text-5xl">
-                Shopping should feel like finding a <span className="font-serif italic">gem.</span>
-              </h2>
-              <p className="mt-5 max-w-120 text-base leading-7 text-muted-foreground">
-                We bring together independent makers and everyday essentials that earn their place
-                in your home. No endless scrolling. Just good things, picked with a little more
-                care.
-              </p>
-              <a
-                href="#categories"
-                className="mt-7 inline-flex items-center gap-2 border-b border-foreground pb-1.5 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
-              >
-                Get to know our picks <LuArrowRight className="size-4" />
-              </a>
-            </div>
-          </section>
-        </Reveal>
-
-        <Reveal>
-          <section className="mx-5 mb-14 overflow-hidden rounded-[28px] bg-primary px-6 py-12 text-center text-primary-foreground sm:mx-8 sm:mb-20 sm:rounded-[36px] sm:px-10 sm:py-16 lg:mx-auto lg:max-w-307.5">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary-foreground/70">
-              A note from us
-            </p>
-            <h2 className="mx-auto mt-3 max-w-162.5 font-heading text-3xl font-semibold tracking-tighter sm:text-4xl">
-              Good finds. Good feelings. Straight to your inbox.
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-primary-foreground/70">
-              Get first dibs on new favorites, thoughtful gift ideas, and the occasional little
-              treat.
-            </p>
-            <form
-              className="mx-auto mt-7 flex max-w-110 rounded-full bg-background p-1.5"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const email = new FormData(event.currentTarget).get("email");
-                if (typeof email === "string") {
-                  window.location.href = `mailto:hello@wondercart.com?subject=Join%20WonderCart%20notes&body=${encodeURIComponent(email)}`;
-                }
-              }}
-            >
-              <label htmlFor="newsletter-email" className="sr-only">
-                Your email address
-              </label>
-              <input
-                id="newsletter-email"
-                name="email"
-                type="email"
-                placeholder="Your email address"
-                className="min-w-0 flex-1 bg-transparent px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                required
-              />
-              <button
-                type="submit"
-                className="rounded-full bg-secondary px-5 py-3 text-xs font-bold text-secondary-foreground transition hover:bg-secondary/80 sm:text-sm"
-              >
-                Count me in
-              </button>
-            </form>
-            <p className="mt-3 text-[11px] text-primary-foreground/50">
-              Only the good stuff. Unsubscribe anytime.
-            </p>
-          </section>
+            </Container>
+          </Section>
         </Reveal>
       </main>
 
       <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-330 flex-col gap-5 px-5 py-7 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+        <Container className="flex flex-col gap-5 py-7 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <a
             href="#"
             className="flex items-center gap-2 font-heading text-base font-bold tracking-tight text-foreground"
@@ -577,7 +603,7 @@ function RouteComponent() {
               Say hello
             </a>
           </div>
-        </div>
+        </Container>
       </footer>
     </div>
   );

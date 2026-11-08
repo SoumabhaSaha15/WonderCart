@@ -32,19 +32,19 @@ export default function ErrorPage({ error, reset }: ErrorComponentProps) {
           <div className="mb-8 flex size-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive ring-1 ring-destructive/15">
             <LuTriangleAlert aria-hidden="true" className="size-7" />
           </div>
-          <div className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-muted-foreground">
+          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             <img
               src="/logo.svg"
               alt=""
               aria-hidden="true"
               className="size-5 object-contain dark:invert"
             />
-            <span>WONDERCART / ERROR</span>
+            <span>Wondercart / Error</span>
           </div>
           <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
             {title}
           </h1>
-          <p className="mt-3 max-w-sm text-pretty leading-6 text-muted-foreground">{description}</p>
+          <p className="mt-3 max-w-md text-pretty leading-6 text-muted-foreground">{description}</p>
           <div className="mt-8 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
             <Button onClick={reset}>
               <LuRefreshCw data-icon="inline-start" />

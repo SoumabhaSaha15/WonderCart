@@ -3,13 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
-  "imports": {
-    "#/*": "./dist/*"
-  },
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx --watch --inspect src/index.ts",
     "start": "cross-env NODE_ENV=production node dist/index.js",
-    "build": "tsc && tsc-alias --resolve-full-paths",
+    "build": "tsc && tsc-alias",
     "clear": "rm -rf dist",
     "fmt": "oxfmt",
     "lint": "oxlint",
@@ -17,6 +14,8 @@
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0",
+    "@casl/ability": "^7.1.1",
+    "@casl/mongoose": "^9.1.0",
     "@t3-oss/env-core": "^0.13.11",
     "boxen": "^9.0.0",
     "chalk": "^6.0.1",
@@ -30,6 +29,8 @@
     "express-zod-safe": "^3.2.1",
     "mongodb": "^7.8.0",
     "mongoose": "9.12.0",
+    "mongoose-aggregate-paginate-v2": "^1.1.5",
+    "mongoose-paginate-v2": "^1.9.5",
     "morgan": "^1.12.1",
     "multer": "^2.5.0",
     "swagger-themes": "^1.4.3",
@@ -55,8 +56,5 @@
     "tsc-alias": "^1.9.10",
     "tsx": "^4.23.15",
     "typescript": "7.0.2"
-  },
-  "engines": {
-    "node": ">=22.x"
   }
 }

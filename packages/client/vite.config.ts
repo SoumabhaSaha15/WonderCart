@@ -101,7 +101,7 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-      }) as any,
+      }), //as any,
       // */
     ]),
   };

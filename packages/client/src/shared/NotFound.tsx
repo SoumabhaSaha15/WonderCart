@@ -24,7 +24,7 @@ export default function NotFoundPage() {
           <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
             This page took a wrong turn
           </h1>
-          <p className="mt-3 max-w-sm text-pretty leading-6 text-muted-foreground">
+          <p className="mt-3 max-w-md text-pretty leading-6 text-muted-foreground">
             We couldn't find what you were looking for. It may have moved, or the link might be
             outdated.
           </p>
@@ -38,14 +38,14 @@ export default function NotFoundPage() {
               Go back
             </Button>
           </div>
-          <div className="mt-10 flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground">
+          <div className="mt-10 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
             <img
               src="/logo.svg"
               alt=""
               aria-hidden="true"
               className="size-5 object-contain dark:invert"
             />
-            <span>WONDERCART</span>
+            <span>Wondercart</span>
           </div>
         </CardContent>
       </Card>
