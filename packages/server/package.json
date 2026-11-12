@@ -6,15 +6,15 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx --watch --inspect src/index.ts",
     "start": "cross-env NODE_ENV=production node dist/index.js",
-    "build": "tsc && tsc-alias",
+    "build": "tsc -b && tsc-alias",
     "clear": "rm -rf dist",
-    "fmt": "oxfmt",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "fmt": "vp fmt",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0",
-    "@casl/ability": "^7.1.1",
+    "@casl/ability": "7.1.2",
     "@casl/mongoose": "^9.1.0",
     "@t3-oss/env-core": "^0.13.11",
     "boxen": "^9.0.0",
@@ -23,12 +23,12 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "csrf-sync": "^4.2.1",
-    "dotenv": "18.0.9",
+    "dotenv": "18.0.10",
     "express": "^5.3.0",
     "express-session": "^1.19.0",
     "express-zod-safe": "^3.2.1",
     "mongodb": "^7.8.0",
-    "mongoose": "9.12.0",
+    "mongoose": "9.12.1",
     "mongoose-aggregate-paginate-v2": "^1.1.5",
     "mongoose-paginate-v2": "^1.9.5",
     "morgan": "^1.12.1",
@@ -51,10 +51,10 @@
     "@types/swagger-ui-express": "^4.1.8",
     "cross-env": "^10.1.0",
     "globals": "^17.14.0",
-    "oxfmt": "0.77.0",
-    "oxlint": "1.92.0",
     "tsc-alias": "^1.9.10",
     "tsx": "^4.23.15",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   }
 }

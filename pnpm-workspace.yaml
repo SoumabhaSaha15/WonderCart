@@ -5,8 +5,8 @@ packages:
 allowBuilds:
   "@scarf/scarf": true
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@1.5.0
-  vite-plus: 1.5.0
+  vite: npm:@voidzero-dev/vite-plus-core@1.6.0
+  vite-plus: 1.6.0
 
 minimumReleaseAgeExclude:
   - "@oxc-transform-react/binding-android-arm-eabi@0.157.0"
@@ -95,6 +95,8 @@ permissions:
     skills: true
   esbuild:
     build: true
+  tsdown:
+    skills: true
 skills:
   dirs:
     - .claude/skills
