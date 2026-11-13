@@ -6,6 +6,11 @@ export default defineConfig({
     singleQuote: true,
     semi: true,
     trailingComma: "none",
+    sortImports: {
+      ignoreCase: true,
+      order: "asc",
+      sortSideEffects: true,
+    },
     ignorePatterns: [
       "dist/**",
       "*.min.js",

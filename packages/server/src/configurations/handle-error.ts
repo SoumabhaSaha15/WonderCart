@@ -1,7 +1,7 @@
-import z from "zod";
 import chalk from "chalk";
-import { MongoServerError } from "mongodb";
 import { Request, Response, NextFunction } from "express";
+import { MongoServerError } from "mongodb";
+import z from "zod";
 
 export default async (err: Error, _: Request, res: Response, __: NextFunction) => {
   if (err instanceof z.ZodError) {

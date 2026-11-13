@@ -1,9 +1,10 @@
 import path from "path";
-import react from "@vitejs/plugin-react";
-import { VitePWA } from "vite-plugin-pwa";
+
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig, lazyPlugins, loadEnv } from "vite-plus";
 
 // https://vite.dev/config/
@@ -15,8 +16,12 @@ export default defineConfig(({ mode }) => {
       "*": "vp check --fix",
     },
     fmt: {
-      singleQuote: true,
       semi: true,
+      singleQuote: true,
+      sortImports: {
+        ignoreCase: true,
+        order: "asc",
+      },
     },
     lint: {
       plugins: ["react", "typescript", "oxc"],

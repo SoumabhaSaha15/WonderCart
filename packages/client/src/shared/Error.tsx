@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate, type ErrorComponentProps } from "@tanstack/react-router";
 import axios from "axios";
-import { ZodError } from "zod";
 import { LuHouse, LuRefreshCw, LuTriangleAlert } from "react-icons/lu";
+import { ZodError } from "zod";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function ErrorPage({ error, reset }: ErrorComponentProps) {
   const navigate = useNavigate();

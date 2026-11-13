@@ -1,5 +1,6 @@
-import morgan from "morgan";
 import express from "express";
+import morgan from "morgan";
+
 import userRouter from "#/router/user/index";
 
 const router = express.Router();

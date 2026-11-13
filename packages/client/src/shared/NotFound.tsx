@@ -1,8 +1,9 @@
+import { useNavigate } from "@tanstack/react-router";
+import { LuArrowLeft, LuHouse, LuSearch } from "react-icons/lu";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useNavigate } from "@tanstack/react-router";
-import { LuArrowLeft, LuHouse, LuSearch } from "react-icons/lu";
 
 export default function NotFoundPage() {
   const navigate = useNavigate();

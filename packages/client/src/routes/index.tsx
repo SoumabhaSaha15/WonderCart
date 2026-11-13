@@ -1,8 +1,8 @@
-// import {Link} from "@tanstack/react-router";
-import { useInView } from "react-intersection-observer";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type ComponentProps, type ReactNode } from "react";
 import { LuArrowRight, LuHeart, LuMenu, LuShoppingBag, LuStar, LuX } from "react-icons/lu";
+// import {Link} from "@tanstack/react-router";
+import { useInView } from "react-intersection-observer";
 
 type Category = "All picks" | "Fashion" | "Home" | "Beauty" | "Tech";
 const currentYear = new Date().getFullYear();

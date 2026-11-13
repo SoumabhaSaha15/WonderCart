@@ -1,5 +1,6 @@
-import { z } from "zod";
 import { type Request, type Response } from "express";
+import { z } from "zod";
+
 import { registry } from "#/configurations/open-api-docs";
 
 const UserSchema = registry.register(

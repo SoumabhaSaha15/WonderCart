@@ -1,18 +1,20 @@
 import path from "path";
-import cors from "cors";
+
 import chalk from "chalk";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import express from "express";
 import { connect } from "mongoose";
-import router from "#/router/index";
-import env from "#/configurations/env";
-import cookieParser from "cookie-parser";
-import listener from "#/utility/listener";
+import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
-import sessionConfig from "#/configurations/session";
+
+import { csrfSynchronisedProtection, csrfTokenMiddleware } from "#/configurations/csrf";
+import env from "#/configurations/env";
 import errorHadler from "#/configurations/handle-error";
 import { buildOpenApiSpec } from "#/configurations/open-api-docs";
-import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
-import { csrfSynchronisedProtection, csrfTokenMiddleware } from "#/configurations/csrf";
+import sessionConfig from "#/configurations/session";
+import router from "#/router/index";
+import listener from "#/utility/listener";
 
 try {
   // dns.setServers(['8.8.8.8', '8.8.4.4']); // Set DNS servers to Google's public DNS servers. It is used to resolve mongo-atlas querySrv error.

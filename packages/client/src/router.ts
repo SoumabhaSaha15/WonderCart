@@ -1,9 +1,10 @@
-import ErrorPage from "@/shared/Error";
-import LoadingPage from "@/shared/Loader";
-import { routeTree } from "@/routeTree.gen";
-import NotFoundPage from "@/shared/NotFound";
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
+
+import { routeTree } from "@/routeTree.gen";
+import ErrorPage from "@/shared/Error";
+import LoadingPage from "@/shared/Loader";
+import NotFoundPage from "@/shared/NotFound";
 
 export const queryClient = new QueryClient({
   defaultOptions: {

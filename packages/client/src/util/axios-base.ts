@@ -1,6 +1,6 @@
+import axios, { type AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { type ZodType } from "zod";
-import axios, { type AxiosResponse } from "axios";
 
 declare module "axios" {
   export interface AxiosRequestConfig {

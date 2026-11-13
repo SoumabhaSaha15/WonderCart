@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useGSAP } from "@gsap/react";
 import { useBlocker, useRouterState } from "@tanstack/react-router";
 import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 gsap.registerPlugin(useGSAP);
 
