@@ -1,10 +1,11 @@
+import env from "#/configurations/env";
 import mongoose from "mongoose";
 import pagination from "mongoose-paginate-v2";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 import { accessibleRecordsPlugin, AccessibleModel } from "@casl/mongoose";
 
 mongoose.set("strictQuery", "throw");
-mongoose.set("debug", process.env["NODE_ENV"] === "development");
+mongoose.set("debug", env.NODE_ENV === "development");
 mongoose.plugin(pagination);
 mongoose.plugin(aggregatePaginate);
 mongoose.plugin(accessibleRecordsPlugin);
