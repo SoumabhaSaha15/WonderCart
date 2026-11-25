@@ -33,7 +33,8 @@ registry.registerPath({
   },
 });
 
-export default async (_: Request, res: Response) => {
+export default async (req: Request, res: Response) => {
+  req.log.warn("Fetching user details");
   res.json({
     id: "usr_123",
     name: "Alice",

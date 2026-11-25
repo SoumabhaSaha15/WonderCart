@@ -7,7 +7,9 @@ import express from "express";
 import { connect } from "mongoose";
 import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
-
+// import Admin from "adminjs";
+// import AdminExpress from "@adminjs/express";
+// import * as AdminMongoose from "@adminjs/mongoose";
 import { csrfSynchronisedProtection, csrfTokenMiddleware } from "#/configurations/csrf";
 import env from "#/configurations/env";
 import errorHadler from "#/configurations/handle-error";
@@ -19,6 +21,12 @@ import listener from "#/utility/listener";
 try {
   // dns.setServers(['8.8.8.8', '8.8.4.4']); // Set DNS servers to Google's public DNS servers. It is used to resolve mongo-atlas querySrv error.
   const CONNECTOR = await connect(env.DB_URI);
+  // const admin = new Admin({});
+  // Admin.registerAdapter({
+  //   Resource: AdminMongoose.Resource,
+  //   Database: AdminMongoose.Database,
+  // });
+  // const adminRouter = AdminExpress.buildRouter(admin);
   const APP = express()
     .use(cors({ origin: env.CORS_URL, credentials: true }))
     .set("query parser", "extended")
@@ -52,7 +60,9 @@ try {
         res.setHeader("Content-Type", "application/json");
         res.send(SWAGGER_SPECS);
       })
+      // .use(admin.options.rootPath, adminRouter)
       .use(router);
+    // void admin.watch();
   }
 
   const SERVER = APP.use(errorHadler).listen(env.PORT, listener(env));
