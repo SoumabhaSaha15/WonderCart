@@ -1,4 +1,5 @@
 import z from "zod";
+
 import mongoose, { type ExtendedDocument, PluginTypeExtender } from "#/configurations/db";
 
 const name = z

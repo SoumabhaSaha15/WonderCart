@@ -1,4 +1,5 @@
 import path from "path";
+
 import chalk from "chalk";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -6,6 +7,7 @@ import express from "express";
 import { connect } from "mongoose";
 import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
+
 import { csrfSynchronisedProtection, csrfTokenMiddleware } from "#/configurations/csrf";
 import env from "#/configurations/env";
 import errorHadler from "#/configurations/handle-error";

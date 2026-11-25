@@ -5,8 +5,8 @@ packages:
 allowBuilds:
   "@scarf/scarf": true
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@1.6.0
-  vite-plus: 1.6.0
+  vite: npm:@voidzero-dev/vite-plus-core@8.3.8001
+  vite-plus: 1.8.0
 
 minimumReleaseAgeExclude:
   - "@oxc-transform-react/binding-android-arm-eabi@0.157.0"
@@ -85,11 +85,6 @@ minimumReleaseAgeExclude:
 
 overrides:
   vite@*: "catalog:"
-peerDependencyRules:
-  allowAny:
-    - vite
-  allowedVersions:
-    vite: "*"
 permissions:
   "@tanstack/charts":
     skills: true
