@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
     "paths": {
-      "#/*": ["./src/*"]
+      "@/*": ["./src/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "strict": true,

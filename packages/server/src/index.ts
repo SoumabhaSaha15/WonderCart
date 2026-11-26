@@ -8,13 +8,13 @@ import { connect } from "mongoose";
 import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
 
-import { csrfSynchronisedProtection, csrfTokenMiddleware } from "#/configurations/csrf";
-import env from "#/configurations/env";
-import errorHadler from "#/configurations/handle-error";
-import { buildOpenApiSpec } from "#/configurations/open-api-docs";
-import sessionConfig from "#/configurations/session";
-import router from "#/router/index";
-import listener from "#/utility/listener";
+import { csrfSynchronisedProtection, csrfTokenMiddleware } from "@/configurations/csrf";
+import env from "@/configurations/env";
+import errorHadler from "@/configurations/handle-error";
+import { buildOpenApiSpec } from "@/configurations/open-api-docs";
+import sessionConfig from "@/configurations/session";
+import router from "@/router/index";
+import listener from "@/utility/listener";
 
 try {
   // dns.setServers(['8.8.8.8', '8.8.4.4']); // Set DNS servers to Google's public DNS servers. It is used to resolve mongo-atlas querySrv error.

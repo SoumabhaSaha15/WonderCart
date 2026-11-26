@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 import pagination from "mongoose-paginate-v2";
 
-import env from "#/configurations/env";
+import env from "@/configurations/env";
 
 mongoose.set("strictQuery", "throw");
 mongoose.set("debug", env.NODE_ENV === "development");

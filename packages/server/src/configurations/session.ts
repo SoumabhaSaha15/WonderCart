@@ -1,7 +1,7 @@
 import MongoStore from "connect-mongo";
 import session from "express-session";
 
-import { type Env } from "#/configurations/env";
+import { type Env } from "@/configurations/env";
 const sessionConfig = (env: Env) => {
   const sessionStore = MongoStore.create({
     mongoUrl: env.DB_URI,

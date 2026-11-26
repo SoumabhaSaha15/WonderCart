@@ -1,7 +1,7 @@
 import express from "express";
 import pino_http from "pino-http";
 
-import userRouter from "#/router/user/index";
+import userRouter from "@/router/user/index";
 
 const router = express.Router();
 

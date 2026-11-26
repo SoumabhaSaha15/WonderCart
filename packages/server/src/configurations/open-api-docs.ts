@@ -5,7 +5,7 @@ import {
 } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
-import { type Env } from "#/configurations/env.js";
+import { type Env } from "@/configurations/env.js";
 
 extendZodWithOpenApi(z); // Extend Zod with OpenAPI capabilities [monkey-patching pattern]
 
