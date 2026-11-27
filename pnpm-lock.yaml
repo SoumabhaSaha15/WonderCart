@@ -281,6 +281,9 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      use-ripple-hook:
+        specifier: ^2.0.0
+        version: 2.0.0(react@19.3.1)
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -5837,6 +5840,12 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
+  use-ripple-hook@2.0.0:
+    resolution: {integrity: sha512-3lsCyPs5ZB+EKFb9SfKUe/nrP4YQ0aG9jcI836vUueSBCDa57yLFvmONdnq0OH7APHJHbFNrGJ1WKqgnnpkfqA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
   use-sync-external-store@1.7.0:
     resolution: {integrity: sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==}
     peerDependencies:
@@ -11199,6 +11208,10 @@ snapshots:
       browserslist: 4.29.6
       escalade: 3.2.0
       picocolors: 1.1.1
+
+  use-ripple-hook@2.0.0(react@19.3.1):
+    dependencies:
+      react: 19.3.1
 
   use-sync-external-store@1.7.0(react@19.3.1):
     dependencies:

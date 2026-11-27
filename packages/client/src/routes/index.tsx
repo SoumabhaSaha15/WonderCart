@@ -1,11 +1,39 @@
+import { useGSAP } from "@gsap/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, type ComponentProps, type ReactNode } from "react";
+import { cn } from "cn";
+import gsap from "gsap";
+import { useCallback, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { LuArrowRight, LuHeart, LuMenu, LuShoppingBag, LuStar, LuX } from "react-icons/lu";
-// import {Link} from "@tanstack/react-router";
 import { useInView } from "react-intersection-observer";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+gsap.registerPlugin(useGSAP);
+
 type Category = "All picks" | "Fashion" | "Home" | "Beauty" | "Tech";
+type Product = {
+  id: number;
+  name: string;
+  category: Exclude<Category, "All picks">;
+  description: string;
+  price: string;
+  rating: string;
+  image: string;
+  tag?: string;
+};
 const currentYear = new Date().getFullYear();
+
+const productFilters: Category[] = ["All picks", "Fashion", "Home", "Beauty", "Tech"];
 
 const categories: { name: Exclude<Category, "All picks">; image: string; note: string }[] = [
   {
@@ -34,17 +62,7 @@ const categories: { name: Exclude<Category, "All picks">; image: string; note: s
   },
 ];
 
-const products: {
-  id: number;
-  name: string;
-  category: Exclude<Category, "All picks">;
-  description: string;
-  price: string;
-  rating: string;
-  image: string;
-  color: string;
-  tag?: string;
-}[] = [
+const products: Product[] = [
   {
     id: 1,
     name: "Everyday carryall",
@@ -54,7 +72,6 @@ const products: {
     rating: "4.9",
     image:
       "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=900&q=85",
-    color: "bg-muted",
     tag: "Bestseller",
   },
   {
@@ -66,7 +83,6 @@ const products: {
     rating: "4.8",
     image:
       "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=900&q=85",
-    color: "bg-muted",
   },
   {
     id: 3,
@@ -77,7 +93,6 @@ const products: {
     rating: "5.0",
     image:
       "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=85",
-    color: "bg-muted",
     tag: "New",
   },
   {
@@ -89,7 +104,6 @@ const products: {
     rating: "4.9",
     image:
       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=85",
-    color: "bg-muted",
   },
 ];
 
@@ -98,14 +112,58 @@ export const Route = createFileRoute("/")({
 });
 
 function Reveal({ children, className = "" }: { children: ReactNode; className?: string }) {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.12 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: observerRef, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.12,
+    fallbackInView: true,
+  });
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      containerRef.current = node;
+      observerRef(node);
+    },
+    [observerRef],
+  );
+
+  useGSAP(
+    () => {
+      const container = containerRef.current;
+      if (!inView || !container) return;
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const duration = prefersReducedMotion ? 0 : 0.7;
+      const items = container.querySelectorAll("[data-reveal-item]");
+      const timeline = gsap.timeline();
+
+      timeline.fromTo(
+        container,
+        { autoAlpha: 0, y: prefersReducedMotion ? 0 : 24 },
+        { autoAlpha: 1, y: 0, duration, ease: "power3.out" },
+      );
+
+      if (items.length > 0) {
+        timeline.fromTo(
+          items,
+          { autoAlpha: 0, y: prefersReducedMotion ? 0 : 18 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: prefersReducedMotion ? 0 : 0.55,
+            stagger: prefersReducedMotion ? 0 : 0.09,
+            ease: "power2.out",
+          },
+          "-=0.35",
+        );
+      }
+    },
+    { dependencies: [inView], scope: containerRef, revertOnUpdate: true },
+  );
 
   return (
     <div
-      ref={ref}
-      className={`${className} transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none ${
-        inView ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-      }`}
+      ref={setRefs}
+      className={cn("will-change-[opacity,transform]", className, !inView && "invisible opacity-0")}
     >
       {children}
     </div>
@@ -132,6 +190,78 @@ function Section({
   ...props
 }: ComponentProps<"section"> & { spacing?: keyof typeof sectionPadding }) {
   return <section className={`scroll-mt-8 ${sectionPadding[spacing]} ${className}`} {...props} />;
+}
+
+function ProductCard({
+  product,
+  isFavorite,
+  onToggleFavorite,
+  onAddToBag,
+}: {
+  product: Product;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+  onAddToBag: () => void;
+}) {
+  return (
+    <article data-reveal-item>
+      <Card className="group min-w-0 gap-0 overflow-visible rounded-none bg-transparent py-0 ring-0">
+        <div className="relative overflow-hidden rounded-2xl bg-muted sm:rounded-3xl">
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            className="aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-105"
+          />
+          {product.tag && (
+            <Badge
+              variant="secondary"
+              className="absolute left-3 top-3 border-0 bg-background text-foreground sm:left-4 sm:top-4"
+            >
+              {product.tag}
+            </Badge>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label={
+              isFavorite
+                ? `Remove ${product.name} from wishlist`
+                : `Add ${product.name} to wishlist`
+            }
+            aria-pressed={isFavorite}
+            onClick={onToggleFavorite}
+            className="absolute right-3 top-3 size-9 rounded-full bg-background/90 text-muted-foreground hover:bg-background hover:text-primary sm:right-4 sm:top-4"
+          >
+            <LuHeart className={cn(isFavorite && "fill-primary text-primary")} />
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={onAddToBag}
+            className="absolute bottom-3 left-3 right-3 rounded-full bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground sm:bottom-4 sm:left-4 sm:right-4 sm:h-10 sm:text-sm sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+          >
+            Add to bag
+          </Button>
+        </div>
+        <CardHeader className="grid-cols-[1fr_auto] px-1 pt-3 sm:px-2 sm:pt-4">
+          <CardTitle className="text-sm font-semibold leading-5 sm:text-base">
+            {product.name}
+          </CardTitle>
+          <CardAction className="font-bold">{product.price}</CardAction>
+          <CardDescription className="col-span-2 truncate text-xs sm:text-sm">
+            {product.description}
+          </CardDescription>
+        </CardHeader>
+        <CardFooter className="gap-1 px-1 pt-2 text-xs text-muted-foreground sm:px-2">
+          <LuStar className="size-3 fill-primary text-primary" />
+          {product.rating}
+        </CardFooter>
+      </Card>
+    </article>
+  );
 }
 
 function RouteComponent() {
@@ -174,31 +304,39 @@ function RouteComponent() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <a
-              href="#shop"
-              className="hidden rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors hover:border-primary hover:bg-card sm:inline-flex"
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="hidden rounded-full px-5 sm:inline-flex"
             >
               Explore finds
-            </a>
-            <button
+            </Button>
+            <Button
               type="button"
-              className="relative flex size-11 items-center justify-center rounded-full border border-border bg-card transition hover:border-primary"
+              variant="outline"
+              size="icon"
+              className="relative size-11 rounded-full bg-card"
               aria-label={`Shopping bag with ${cartCount} items`}
             >
-              <LuShoppingBag className="size-5" />
-              <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+              <LuShoppingBag />
+              <Badge className="absolute -right-1 -top-1 size-5 justify-center rounded-full p-0 text-[10px]">
                 {cartCount}
-              </span>
-            </button>
-            <button
+              </Badge>
+            </Button>
+            <Button
               type="button"
-              className="flex size-11 items-center justify-center rounded-full border border-border bg-card md:hidden"
+              variant="outline"
+              size="icon"
+              className="size-11 rounded-full bg-card md:hidden"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(!menuOpen)}
             >
-              {menuOpen ? <LuX className="size-5" /> : <LuMenu className="size-5" />}
-            </button>
+              {menuOpen ? <LuX /> : <LuMenu />}
+            </Button>
           </div>
         </Container>
         {menuOpen && (
@@ -224,11 +362,14 @@ function RouteComponent() {
         <Reveal>
           <Section spacing="hero">
             <Container className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-              <div className="max-w-xl lg:col-span-5">
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-secondary-foreground">
+              <div data-reveal-item className="max-w-xl lg:col-span-5">
+                <Badge
+                  variant="secondary"
+                  className="mb-6 h-auto gap-2 rounded-full px-4 py-2 font-semibold uppercase tracking-widest"
+                >
                   <span className="size-1.5 rounded-full bg-primary" />
                   Good things, found here
-                </div>
+                </Badge>
                 <h1 className="font-heading text-6xl font-semibold leading-none tracking-tighter sm:text-7xl lg:text-8xl text-foreground">
                   Find your
                   <br />
@@ -241,13 +382,17 @@ function RouteComponent() {
                   to keep for yourself.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <a
-                    href="#shop"
-                    className="inline-flex items-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+                  <Button
+                    type="button"
+                    size="lg"
+                    onClick={() =>
+                      document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    className="h-12 rounded-full px-6 text-sm font-semibold"
                   >
                     Shop the good stuff
-                    <LuArrowRight className="size-4" />
-                  </a>
+                    <LuArrowRight data-icon="inline-end" />
+                  </Button>
                   <Link to="/about">
                     <span className="text-sm text-muted-foreground">Free shipping over $50</span>
                   </Link>
@@ -277,7 +422,10 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <div className="relative mx-auto w-full max-w-2xl lg:col-span-7 lg:ml-auto">
+              <div
+                data-reveal-item
+                className="relative mx-auto w-full max-w-2xl lg:col-span-7 lg:ml-auto"
+              >
                 <div className="absolute -right-2 top-6 z-10 flex size-24 rotate-6 flex-col items-center justify-center rounded-full bg-accent text-center text-accent-foreground shadow-lg sm:-right-5 sm:top-10 sm:size-28">
                   <span className="text-xs font-bold uppercase tracking-widest">Little joys</span>
                   <span className="font-heading text-2xl font-bold leading-tight">15% off</span>
@@ -324,6 +472,7 @@ function RouteComponent() {
               ].map(([title, detail], index) => (
                 <div
                   key={title}
+                  data-reveal-item
                   className={`px-3 md:px-5 ${index > 0 ? "md:border-l md:border-border" : ""}`}
                 >
                   <p className="text-sm font-semibold">{title}</p>
@@ -358,6 +507,7 @@ function RouteComponent() {
                   <button
                     key={category.name}
                     type="button"
+                    data-reveal-item
                     onClick={() => {
                       setSelectedCategory(category.name);
                       document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
@@ -402,88 +552,44 @@ function RouteComponent() {
                     Considered favorites for your everyday.
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {(["All picks", "Fashion", "Home", "Beauty", "Tech"] as Category[]).map(
-                    (category) => (
-                      <button
-                        key={category}
-                        type="button"
-                        onClick={() => setSelectedCategory(category)}
-                        className={`rounded-full px-4 py-2 text-xs font-semibold transition sm:text-sm ${
-                          selectedCategory === category
-                            ? "bg-primary text-primary-foreground"
-                            : "border border-border bg-card/70 text-muted-foreground hover:border-primary hover:text-foreground"
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    ),
-                  )}
-                </div>
+                <ToggleGroup
+                  aria-label="Filter products by category"
+                  value={[selectedCategory]}
+                  onValueChange={(value) => {
+                    const category = productFilters.find((filter) => filter === value[0]);
+                    if (category) setSelectedCategory(category);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="flex flex-wrap"
+                >
+                  {productFilters.map((category) => (
+                    <ToggleGroupItem
+                      key={category}
+                      value={category}
+                      className="rounded-full bg-card/70 text-xs aria-pressed:bg-primary aria-pressed:text-primary-foreground sm:text-sm"
+                    >
+                      {category}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
               </div>
 
               <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-4">
                 {visibleProducts.map((product) => (
-                  <article key={product.id} className="group min-w-0">
-                    <div
-                      className={`relative overflow-hidden rounded-2xl ${product.color} sm:rounded-3xl`}
-                    >
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        loading="lazy"
-                        className="aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-105"
-                      />
-                      {product.tag && (
-                        <span className="absolute left-3 top-3 rounded-full bg-background px-3 py-1.5 text-xs font-bold tracking-wide text-muted-foreground sm:left-4 sm:top-4 sm:text-xs">
-                          {product.tag}
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        aria-label={
-                          favorites.includes(product.id)
-                            ? `Remove ${product.name} from wishlist`
-                            : `Add ${product.name} to wishlist`
-                        }
-                        aria-pressed={favorites.includes(product.id)}
-                        onClick={() =>
-                          setFavorites((current) =>
-                            current.includes(product.id)
-                              ? current.filter((id) => id !== product.id)
-                              : [...current, product.id],
-                          )
-                        }
-                        className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-background/90 text-muted-foreground transition hover:bg-background hover:text-primary sm:right-4 sm:top-4"
-                      >
-                        <LuHeart
-                          className={`size-4 ${favorites.includes(product.id) ? "fill-primary text-primary" : ""}`}
-                        />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCartCount((count) => count + 1)}
-                        className="absolute bottom-3 left-3 right-3 rounded-full bg-background px-3 py-2.5 text-xs font-semibold text-foreground opacity-100 shadow-sm transition hover:bg-primary hover:text-primary-foreground sm:bottom-4 sm:left-4 sm:right-4 sm:py-3 sm:text-sm sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100"
-                      >
-                        Add to bag
-                      </button>
-                    </div>
-                    <div className="px-1 pt-3 sm:px-2 sm:pt-4">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-sm font-semibold leading-5 sm:text-base">
-                          {product.name}
-                        </h3>
-                        <span className="shrink-0 text-sm font-bold">{product.price}</span>
-                      </div>
-                      <p className="mt-1 truncate text-xs text-muted-foreground sm:text-sm">
-                        {product.description}
-                      </p>
-                      <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-                        <LuStar className="size-3 fill-primary text-primary" />
-                        {product.rating}
-                      </div>
-                    </div>
-                  </article>
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    isFavorite={favorites.includes(product.id)}
+                    onToggleFavorite={() =>
+                      setFavorites((current) =>
+                        current.includes(product.id)
+                          ? current.filter((id) => id !== product.id)
+                          : [...current, product.id],
+                      )
+                    }
+                    onAddToBag={() => setCartCount((count) => count + 1)}
+                  />
                 ))}
               </div>
             </Container>
@@ -493,7 +599,7 @@ function RouteComponent() {
         <Reveal>
           <Section id="story">
             <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-              <div className="relative">
+              <div data-reveal-item className="relative">
                 <img
                   src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1300&q=85"
                   alt="Warm, welcoming home filled with thoughtful details"
@@ -507,7 +613,7 @@ function RouteComponent() {
                   </p>
                 </div>
               </div>
-              <div className="pt-4">
+              <div data-reveal-item className="pt-4">
                 <p className="text-xs font-bold uppercase tracking-widest text-primary">
                   A little about us
                 </p>
@@ -534,7 +640,10 @@ function RouteComponent() {
         <Reveal>
           <Section spacing="closing">
             <Container>
-              <div className="overflow-hidden rounded-3xl bg-primary px-6 py-12 text-center text-primary-foreground sm:rounded-4xl sm:px-10 sm:py-16">
+              <div
+                data-reveal-item
+                className="overflow-hidden rounded-3xl bg-primary px-6 py-12 text-center text-primary-foreground sm:rounded-4xl sm:px-10 sm:py-16"
+              >
                 <p className="text-xs font-bold uppercase tracking-widest text-primary-foreground/70">
                   A note from us
                 </p>
@@ -566,12 +675,13 @@ function RouteComponent() {
                     className="min-w-0 flex-1 bg-transparent px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground"
                     required
                   />
-                  <button
+                  <Button
                     type="submit"
-                    className="rounded-full bg-secondary px-5 py-3 text-xs font-bold text-secondary-foreground transition hover:bg-secondary/80 sm:text-sm"
+                    variant="secondary"
+                    className="h-auto rounded-full px-5 py-3 text-xs font-bold sm:text-sm"
                   >
                     Count me in
-                  </button>
+                  </Button>
                 </form>
                 <p className="mt-3 text-xs text-primary-foreground/50">
                   Only the good stuff. Unsubscribe anytime.
