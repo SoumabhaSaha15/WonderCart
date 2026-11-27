@@ -1,3 +1,5 @@
 node_modules
 .vite-hooks
+.agents
+.claude
 # pnpm-lock.yaml

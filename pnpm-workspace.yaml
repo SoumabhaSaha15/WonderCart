@@ -111,3 +111,4 @@ permissions:
 skills:
   dirs:
     - .claude/skills
+    - .agents/skills
