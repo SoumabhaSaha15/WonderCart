@@ -56,20 +56,26 @@ export function Collapse({
         : duration;
 
       if (open) {
-        gsap.to(el, {
-          height: "auto",
-          autoAlpha: 1,
-          duration: animationDuration,
-          ease,
-          onComplete: () => {
-            gsap.set(el, { clearProps: "height,overflow,opacity,visibility" });
-            callbacks.current.onEntered?.();
+        gsap.fromTo(
+          el,
+          { height: 0, autoAlpha: 0, y: 12 },
+          {
+            height: "auto",
+            autoAlpha: 1,
+            y: 0,
+            duration: animationDuration,
+            ease,
+            onComplete: () => {
+              gsap.set(el, { clearProps: "height,overflow,opacity,visibility,transform" });
+              callbacks.current.onEntered?.();
+            },
           },
-        });
+        );
       } else {
         gsap.to(el, {
           height: 0,
           autoAlpha: 0,
+          y: -8,
           duration: animationDuration,
           ease,
           onComplete: () => callbacks.current.onExited?.(),

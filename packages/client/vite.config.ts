@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
     },
     fmt: {
       semi: true,
-      singleQuote: true,
+      singleQuote: false,
       sortImports: {
         ignoreCase: true,
         order: "asc",

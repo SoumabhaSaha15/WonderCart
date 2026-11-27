@@ -134,6 +134,7 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const duration = prefersReducedMotion ? 0 : 0.7;
       const items = container.querySelectorAll("[data-reveal-item]");
+      const visuals = container.querySelectorAll("[data-reveal-visual]");
       const timeline = gsap.timeline();
 
       timeline.fromTo(
@@ -145,15 +146,33 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
       if (items.length > 0) {
         timeline.fromTo(
           items,
-          { autoAlpha: 0, y: prefersReducedMotion ? 0 : 18 },
+          { autoAlpha: 0, y: prefersReducedMotion ? 0 : 20 },
           {
             autoAlpha: 1,
             y: 0,
-            duration: prefersReducedMotion ? 0 : 0.55,
-            stagger: prefersReducedMotion ? 0 : 0.09,
-            ease: "power2.out",
+            duration: prefersReducedMotion ? 0 : 0.6,
+            stagger: prefersReducedMotion ? 0 : 0.1,
+            ease: "power3.out",
           },
           "-=0.35",
+        );
+      }
+
+      if (visuals.length > 0) {
+        timeline.fromTo(
+          visuals,
+          { scale: prefersReducedMotion ? 1 : 1.045 },
+          { scale: 1, duration: prefersReducedMotion ? 0 : 1, ease: "power2.out" },
+          "-=0.55",
+        );
+      }
+
+      const floatingElements = container.querySelectorAll("[data-reveal-float]");
+      if (!prefersReducedMotion && floatingElements.length > 0) {
+        timeline.to(
+          floatingElements,
+          { y: -5, duration: 2.8, ease: "sine.inOut", repeat: -1, yoyo: true },
+          "+=0.1",
         );
       }
     },
@@ -204,13 +223,14 @@ function ProductCard({
   onAddToBag: () => void;
 }) {
   return (
-    <article data-reveal-item>
+    <article data-reveal-item data-filter-card>
       <Card className="group min-w-0 gap-0 overflow-visible rounded-none bg-transparent py-0 ring-0">
         <div className="relative overflow-hidden rounded-2xl bg-muted sm:rounded-3xl">
           <img
             src={product.image}
             alt={product.name}
             loading="lazy"
+            data-reveal-visual
             className="aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-105"
           />
           {product.tag && (
@@ -232,7 +252,7 @@ function ProductCard({
             }
             aria-pressed={isFavorite}
             onClick={onToggleFavorite}
-            className="absolute right-3 top-3 size-9 rounded-full bg-background/90 text-muted-foreground hover:bg-background hover:text-primary sm:right-4 sm:top-4"
+            className="absolute right-3 top-3 size-9 rounded-full bg-background/90 text-muted-foreground transition-transform hover:scale-105 hover:bg-background hover:text-primary active:scale-95 sm:right-4 sm:top-4"
           >
             <LuHeart className={cn(isFavorite && "fill-primary text-primary")} />
           </Button>
@@ -241,7 +261,7 @@ function ProductCard({
             variant="secondary"
             size="sm"
             onClick={onAddToBag}
-            className="absolute bottom-3 left-3 right-3 rounded-full bg-background text-foreground shadow-sm hover:bg-primary hover:text-primary-foreground sm:bottom-4 sm:left-4 sm:right-4 sm:h-10 sm:text-sm sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+            className="absolute bottom-3 left-3 right-3 rounded-full bg-background text-foreground shadow-sm transition-all duration-300 hover:bg-primary hover:text-primary-foreground sm:bottom-4 sm:left-4 sm:right-4 sm:h-10 sm:translate-y-2 sm:text-sm sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 sm:focus-visible:translate-y-0 sm:focus-visible:opacity-100"
           >
             Add to bag
           </Button>
@@ -269,6 +289,32 @@ function RouteComponent() {
   const [cartCount, setCartCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
+  const productGridRef = useRef<HTMLDivElement>(null);
+  const previousCategoryRef = useRef(selectedCategory);
+
+  useGSAP(
+    () => {
+      if (previousCategoryRef.current === selectedCategory) return;
+      previousCategoryRef.current = selectedCategory;
+
+      const cards = productGridRef.current?.querySelectorAll<HTMLElement>("[data-filter-card]");
+      if (!cards?.length) return;
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      gsap.fromTo(
+        cards,
+        { autoAlpha: 0, y: prefersReducedMotion ? 0 : 14 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: prefersReducedMotion ? 0 : 0.4,
+          stagger: prefersReducedMotion ? 0 : 0.07,
+          ease: "power3.out",
+        },
+      );
+    },
+    { dependencies: [selectedCategory], scope: productGridRef, revertOnUpdate: true },
+  );
 
   const visibleProducts =
     selectedCategory === "All picks"
@@ -426,7 +472,10 @@ function RouteComponent() {
                 data-reveal-item
                 className="relative mx-auto w-full max-w-2xl lg:col-span-7 lg:ml-auto"
               >
-                <div className="absolute -right-2 top-6 z-10 flex size-24 rotate-6 flex-col items-center justify-center rounded-full bg-accent text-center text-accent-foreground shadow-lg sm:-right-5 sm:top-10 sm:size-28">
+                <div
+                  data-reveal-float
+                  className="absolute -right-2 top-6 z-10 flex size-24 rotate-6 flex-col items-center justify-center rounded-full bg-accent text-center text-accent-foreground shadow-lg sm:-right-5 sm:top-10 sm:size-28"
+                >
                   <span className="text-xs font-bold uppercase tracking-widest">Little joys</span>
                   <span className="font-heading text-2xl font-bold leading-tight">15% off</span>
                   <span className="text-xs font-medium">your first order</span>
@@ -435,6 +484,7 @@ function RouteComponent() {
                   <img
                     src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1500&q=90"
                     alt="A thoughtfully styled spring outfit"
+                    data-reveal-visual
                     className="aspect-4/5 w-full object-cover object-center sm:aspect-5/4 lg:aspect-square"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
@@ -518,6 +568,7 @@ function RouteComponent() {
                       src={category.image}
                       alt=""
                       loading="lazy"
+                      data-reveal-visual
                       className="aspect-4/5 w-full object-cover transition duration-500 group-hover:scale-105 md:aspect-square"
                     />
                     <span className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
@@ -527,7 +578,7 @@ function RouteComponent() {
                       </span>
                       <span className="mt-1 block text-xs text-white/80">{category.note}</span>
                     </span>
-                    <span className="absolute bottom-4 right-4 flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground transition group-hover:bg-background sm:bottom-6 sm:right-6">
+                    <span className="absolute bottom-4 right-4 flex size-8 items-center justify-center rounded-full bg-background/90 text-foreground transition-transform group-hover:translate-x-0.5 group-hover:bg-background sm:bottom-6 sm:right-6">
                       <LuArrowRight className="size-4" />
                     </span>
                   </button>
@@ -575,7 +626,10 @@ function RouteComponent() {
                 </ToggleGroup>
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-4">
+              <div
+                ref={productGridRef}
+                className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-4"
+              >
                 {visibleProducts.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -604,6 +658,7 @@ function RouteComponent() {
                   src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1300&q=85"
                   alt="Warm, welcoming home filled with thoughtful details"
                   loading="lazy"
+                  data-reveal-visual
                   className="aspect-4/3 w-full rounded-3xl object-cover sm:rounded-4xl"
                 />
                 <div className="absolute -bottom-5 right-4 rounded-2xl bg-accent px-5 py-4 text-accent-foreground shadow-lg sm:right-8 sm:px-7 sm:py-5">
